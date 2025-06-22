@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo de Dados - Fichas Reais</title>
+
+  <link rel="stylesheet" type="text/css" href="assets/css/styles.css" /> 
+
+</head>
+<body>
+
+<h1>Jogo de Dados - Fichas Reais</h1>
+<h2>Saldo: R$ <span id="saldo">1000</span></h2>
+
+<h3>Aposte nos números brancos (2x por dado correspondente) e/ou vermelhos (4x)</h3>
+
+<div class="board white-row" id="white-row"></div>
+<div class="board red-row" id="red-row"></div>
+
+<h3>Fichas</h3>
+<div class="fichas" id="area-fichas">
+  <div class="ficha f10" data-valor="10"></div>
+  <div class="ficha f50" data-valor="50"></div>
+  <div class="ficha f100" data-valor="100"></div>
+  <div class="ficha f500" data-valor="500"></div>
+</div>
+
+<button class="button-start" onclick="rolarDados()">🎲 Rolar Dados 🎲</button>
+
+<h3 class="dice">🎲 Dados: <span id="resultado-dados"></span></h3>
+<h3 id="mensagem"></h3>
+
+<script>
+let saldo = 1000;
+const saldoSpan = document.getElementById('saldo');
+const resultadoDados = document.getElementById('resultado-dados');
+const mensagem = document.getElementById('mensagem');
+const whiteRow = document.getElementById('white-row');
+const redRow = document.getElementById('red-row');
+
+let selecionada = null;
+
+let apostas = {
+  white: {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]},
+  red:   {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}
+};
+
+// Criar os números no tabuleiro
+for (let i = 1; i <= 6; i++) {
+  whiteRow.innerHTML += `<div class="cell" data-num="${i}" data-cor="white">
+      <div class="number">⚪ ${i}</div>
+      <div class="total-aposta" id="aposta-white-${i}">R$0</div>
+  </div>`;
+  redRow.innerHTML += `<div class="cell" data-num="${i}" data-cor="red">
+      <div class="number" style="color:red;">🔴 ${i}</div>
+      <div class="total-aposta" id="aposta-red-${i}">R$0</div>
+  </div>`;
+}
+
+// Selecionar ficha
+document.querySelectorAll('.ficha').forEach(f => {
+  f.addEventListener('click', () => {
+    if (selecionada) selecionada.classList.remove('selecionada');
+    selecionada = f;
+    selecionada.classList.add('selecionada');
+  });
+});
+
+// Colocar ficha em casa
+document.querySelectorAll('.cell').forEach(cell => {
+  cell.addEventListener('click', () => {
+    const num = cell.dataset.num;
+    const cor = cell.dataset.cor;
+
+    if (selecionada) {
+      const valor = parseInt(selecionada.dataset.valor);
+      if (saldo >= valor) {
+        saldo -= valor;
+        saldoSpan.innerText = saldo;
+
+        const fichaNova = document.createElement('div');
+        fichaNova.className = `ficha ficha-pequena f${valor}`;
+        fichaNova.dataset.valor = valor;
+
+        const index = apostas[cor][num].length;
+        fichaNova.style.left = `calc(35% + ${index * 20}px)`;
+
+        fichaNova.addEventListener('click', (e) => {
+          e.stopPropagation();
+          cell.removeChild(fichaNova);
+          apostas[cor][num] = apostas[cor][num].filter(f => f !== fichaNova);
+          saldo += parseInt(fichaNova.dataset.valor);
+          saldoSpan.innerText = saldo;
+          atualizarAposta(cor, num);
+          atualizarPosicoesFichas(apostas[cor][num]);
+        });
+
+        apostas[cor][num].push(fichaNova);
+        cell.appendChild(fichaNova);
+        atualizarAposta(cor, num);
+      } else {
+        mensagem.innerText = 'Saldo insuficiente para essa ficha!';
+      }
+    }
+  });
+});
+
+function atualizarAposta(cor, num) {
+  const total = apostas[cor][num].reduce((acc, ficha) => acc + parseInt(ficha.dataset.valor), 0);
+  document.getElementById(`aposta-${cor}-${num}`).innerText = `R$${total}`;
+}
+
+function atualizarPosicoesFichas(fichas) {
+  fichas.forEach((ficha, index) => {
+    ficha.style.left = `calc(35% + ${index * 20}px)`;
+  });
+}
+
+function limparFichas() {
+  for (let cor in apostas) {
+    for (let num in apostas[cor]) {
+      apostas[cor][num].forEach(f => f.parentElement.removeChild(f));
+      apostas[cor][num] = [];
+      atualizarAposta(cor, num);
+    }
+  }
+}
+
+function rolarDados() {
+  const dado1 = Math.floor(Math.random() * 6) + 1;
+  const dado2 = Math.floor(Math.random() * 6) + 1;
+  const dadoVermelho = Math.floor(Math.random() * 6) + 1;
+
+  resultadoDados.innerText = `⚪ ${dado1} ⚪ ${dado2} 🔴 ${dadoVermelho}`;
+  let ganho = 0;
+
+  // Fileira branca ganha com os três dados
+  [dado1, dado2, dadoVermelho].forEach(dado => {
+    apostas.white[dado].forEach(f => {
+      ganho += parseInt(f.dataset.valor) * 2;
+    });
+  });
+
+  // Fileira vermelha só ganha com o dado vermelho
+  apostas.red[dadoVermelho].forEach(f => {
+    ganho += parseInt(f.dataset.valor) * 4;
+  });
+
+  saldo += ganho;
+  saldoSpan.innerText = saldo;
+
+  mensagem.innerText = ganho > 0
+    ? `🎉 Você ganhou R$ ${ganho}!`
+    : `😢 Você não ganhou nessa rodada.`;
+
+  limparFichas();
+}
+</script>
+</body>
+</html>
