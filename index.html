@@ -5,12 +5,26 @@
   <title>Jogo de Dados - Fichas Reais</title>
 
   <link rel="stylesheet" type="text/css" href="assets/css/styles.css" /> 
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 
 </head>
-<body>
+<body id="body-jogo" style="padding-left:370px; padding-top:80px; background:#222b3a;">
 
-<h1>Jogo de Dados - Fichas Reais</h1>
-<h2>Saldo: R$ <span id="saldo">1000</span></h2>
+<div id="top-bar" style="position:fixed; top:0; left:0; width:100vw; height:80px; background:#040f23; z-index:2000; display:flex; align-items:center; box-shadow:0 2px 8px #0003;">
+  <img src="assets/img/logo.png" alt="Logo" style="height:80px; margin-left:20px; margin-right:24px;" />
+  <nav style="display:flex; gap:12px;">
+    <a href="#" style="background:#fff8dc; color:#071222; font-weight:bold; border-radius:6px; padding:6px 14px; text-decoration:none; box-shadow:0 1px 4px #0002; font-size:0.98em;">BOZÓ</a>
+    <a href="#" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">MINES</a>
+    <a href="#" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">OUTROS</a>
+  </nav>
+  <div style="margin-left:auto; margin-right:24px; display:flex; align-items:center; height:100%; gap:12px;">
+    <span id="userGreeting" style="color:#fff8dc; font-size:0.9em;"></span>
+    <span style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:16px; padding:6px 16px; font-size:1em; box-shadow:0 1px 4px #0002; display:inline-block;">Saldo: R$ <span id="saldo">1000</span></span>
+    <button onclick="logout()" style="background:#ff4444; color:#fff; border:none; border-radius:8px; padding:4px 8px; font-size:0.8em; cursor:pointer;">Sair</button>
+  </div>
+</div>
+
+<h1 style="text-align:center;">Jogo de Dados - Fichas Reais (BOZÓ)</h1>
 
 <h3>Aposte nos números brancos (2x por dado correspondente) e/ou vermelhos (4x)</h3>
 
@@ -18,20 +32,92 @@
 <div class="board red-row" id="red-row"></div>
 
 <h3>Fichas</h3>
-<div class="fichas" id="area-fichas">
-  <div class="ficha f10" data-valor="10"></div>
-  <div class="ficha f50" data-valor="50"></div>
-  <div class="ficha f100" data-valor="100"></div>
-  <div class="ficha f500" data-valor="500"></div>
+<div class="fichas" id="area-fichas" style="display: flex; justify-content: center; align-items: flex-end; gap: 24px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div class="ficha f10" data-valor="10"></div>
+    <span style="color: #fff; font-weight: bold; margin-top: 8px; font-size: 1.1em;">R$10</span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div class="ficha f50" data-valor="50"></div>
+    <span style="color: #fff; font-weight: bold; margin-top: 8px; font-size: 1.1em;">R$50</span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div class="ficha f100" data-valor="100"></div>
+    <span style="color: #fff; font-weight: bold; margin-top: 8px; font-size: 1.1em;">R$100</span>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div class="ficha f500" data-valor="500"></div>
+    <span style="color: #fff; font-weight: bold; margin-top: 8px; font-size: 1.1em;">R$500</span>
+  </div>
 </div>
 
 <button class="button-start" onclick="rolarDados()">🎲 Rolar Dados 🎲</button>
 
 <h3 class="dice">🎲 Dados: <span id="resultado-dados"></span></h3>
+
+<div id="menu-logs">
+  <div style="display:flex; justify-content:center; align-items:center;">
+    <strong style="color:#ffe066; font-size:1.2em;">Últimas Jogadas</strong>
+  </div>
+  <hr style="border:1px solid #bfa046; margin:10px 0;">
+  <div id="logs-list"></div>
+</div>
+
 <h3 id="mensagem"></h3>
 
+<div id="admin-panel" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8dc; color:#071222; border:2px solid #bfa046; border-radius:12px; box-shadow:0 4px 24px #0005; padding:24px 20px; z-index:3000; min-width:260px;">
+  <h3 style="margin-top:0;">Painel Admin</h3>
+  <div style="margin-bottom:10px;">
+    <label for="adminUser">Usuário:</label>
+    <input type="text" id="adminUser" style="width:100%; padding:6px; border-radius:6px; border:1px solid #bfa046; margin-top:2px;">
+  </div>
+  <div style="margin-bottom:10px;">
+    <label for="adminValor">Valor a adicionar:</label>
+    <input type="number" id="adminValor" style="width:100%; padding:6px; border-radius:6px; border:1px solid #bfa046; margin-top:2px;">
+  </div>
+  <button onclick="adicionarSaldoAdmin()" style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:8px; padding:6px 16px; border:none; cursor:pointer;">Adicionar Saldo</button>
+  <div id="adminMsg" style="margin-top:10px; font-size:0.95em;"></div>
+</div>
+
+<style>
+  #menu-logs {
+    position: fixed;
+    top: 80px;
+    left: 24px;
+    background: #205c20;
+    border: 2px solid #bfa046;
+    border-radius: 12px;
+    padding: 18px 16px 18px 16px;
+    z-index: 1000;
+    width: 340px;
+    max-width: 95vw;
+    height: 340px;
+    max-height: 65vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 32px #0005;
+    color: #fff8dc;
+    transition: all 0.3s;
+  }
+  @media (max-width: 700px) {
+    #menu-logs {
+      left: 0 !important;
+      right: 0 !important;
+      top: auto !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 180px !important;
+      max-width: 100vw !important;
+      border-radius: 12px 12px 0 0 !important;
+      padding: 10px 6px 10px 6px !important;
+    }
+    #body-jogo {
+      padding-left: 0 !important;
+    }
+  }
+</style>
+
 <script>
-let saldo = 1000;
+let saldo = 1000; // Será sobrescrito pelo loadUserData()
 const saldoSpan = document.getElementById('saldo');
 const resultadoDados = document.getElementById('resultado-dados');
 const mensagem = document.getElementById('mensagem');
@@ -44,6 +130,56 @@ let apostas = {
   white: {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]},
   red:   {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}
 };
+
+let logs = [];
+
+// Sistema de autenticação
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) {
+  window.location.href = 'login.html';
+}
+
+// Carregar dados do usuário
+function loadUserData() {
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const user = users.find(u => u.username === currentUser);
+  if (user) {
+    saldo = user.saldo;
+    saldoSpan.innerText = saldo;
+  } else {
+    // Se não encontrar o usuário, criar com saldo padrão
+    const newUser = {
+      username: currentUser,
+      password: '', // Senha não é necessária aqui
+      saldo: 1000,
+      createdAt: new Date().toISOString()
+    };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    saldo = 1000;
+    saldoSpan.innerText = saldo;
+  }
+}
+
+// Salvar dados do usuário
+function saveUserData() {
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const userIndex = users.findIndex(u => u.username === currentUser);
+  if (userIndex !== -1) {
+    users[userIndex].saldo = saldo;
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem('currentUser');
+  window.location.href = 'login.html';
+}
+
+// Carregar dados ao iniciar e sempre que a página for carregada
+window.addEventListener('load', loadUserData);
+document.addEventListener('DOMContentLoaded', loadUserData);
 
 // Criar os números no tabuleiro
 for (let i = 1; i <= 6; i++) {
@@ -93,6 +229,7 @@ document.querySelectorAll('.cell').forEach(cell => {
           saldoSpan.innerText = saldo;
           atualizarAposta(cor, num);
           atualizarPosicoesFichas(apostas[cor][num]);
+          saveUserData(); // Salvar automaticamente
         });
 
         apostas[cor][num].push(fichaNova);
@@ -126,20 +263,66 @@ function limparFichas() {
   }
 }
 
+function dadoParaFace(num) {
+  const faces = {
+    1: '⚀',
+    2: '⚁',
+    3: '⚂',
+    4: '⚃',
+    5: '⚄',
+    6: '⚅'
+  };
+  return faces[num] || num;
+}
+
+function dadoParaImagem(num, cor) {
+  const corArquivo = cor === 'vermelho' ? 'vermelho' : 'branco';
+  return `<img src='assets/img/dado_${corArquivo}${num}.png' alt='${num}' class='face-dado' />`;
+}
+
+function atualizarLogs() {
+  const logsList = document.getElementById('logs-list');
+  if (logs.length === 0) {
+    logsList.innerHTML = '<em>Nenhuma jogada registrada ainda.</em>';
+    return;
+  }
+  logsList.innerHTML = logs.slice(-20).reverse().map(log => `
+    <div style="margin-bottom:10px;">
+      <div><strong>Dados:</strong> ${log.dados}</div>
+      <div><strong>Aposta:</strong> R$${log.apostado}</div>
+      <div><strong>Resultado:</strong> ${log.ganhou ? 'Ganhou' : 'Perdeu'}${log.ganhou ? ` (R$${log.ganho})` : ''}</div>
+    </div>
+  `).join('');
+}
+
 function rolarDados() {
   const dado1 = Math.floor(Math.random() * 6) + 1;
   const dado2 = Math.floor(Math.random() * 6) + 1;
   const dadoVermelho = Math.floor(Math.random() * 6) + 1;
 
-  resultadoDados.innerText = `⚪ ${dado1} ⚪ ${dado2} 🔴 ${dadoVermelho}`;
+  resultadoDados.innerHTML = `${dadoParaImagem(dado1, 'branco')} ${dadoParaImagem(dado2, 'branco')} ${dadoParaImagem(dadoVermelho, 'vermelho')}`;
   let ganho = 0;
 
-  // Fileira branca ganha com os três dados
-  [dado1, dado2, dadoVermelho].forEach(dado => {
-    apostas.white[dado].forEach(f => {
-      ganho += parseInt(f.dataset.valor) * 2;
-    });
-  });
+  // Calcular valor total apostado nesta rodada
+  let apostado = 0;
+  for (let cor in apostas) {
+    for (let num in apostas[cor]) {
+      apostado += apostas[cor][num].reduce((acc, ficha) => acc + parseInt(ficha.dataset.valor), 0);
+    }
+  }
+
+  // Fileira branca: ganho = valor_apostado * (1 + ocorrências nos três dados)
+  for (let num = 1; num <= 6; num++) {
+    let ocorrencias = 0;
+    if (dado1 === num) ocorrencias++;
+    if (dado2 === num) ocorrencias++;
+    if (dadoVermelho === num) ocorrencias++;
+    if (ocorrencias > 0) {
+      apostas.white[num].forEach(f => {
+        ganho += parseInt(f.dataset.valor) * (1 + ocorrencias);
+      });
+    }
+  }
 
   // Fileira vermelha só ganha com o dado vermelho
   apostas.red[dadoVermelho].forEach(f => {
@@ -148,12 +331,95 @@ function rolarDados() {
 
   saldo += ganho;
   saldoSpan.innerText = saldo;
+  saveUserData(); // Salvar automaticamente
 
   mensagem.innerText = ganho > 0
     ? `🎉 Você ganhou R$ ${ganho}!`
     : `😢 Você não ganhou nessa rodada.`;
 
+  // Adicionar log da jogada
+  logs.push({
+    dados: `${dado1}, ${dado2}, ${dadoVermelho}`,
+    apostado: apostado,
+    ganho: ganho,
+    ganhou: ganho > 0
+  });
+  if (logs.length > 50) logs = logs.slice(-50); // Limitar tamanho do log
+
   limparFichas();
+  atualizarLogs();
+}
+
+// Atualizar logs ao carregar a página e após cada jogada
+window.onload = atualizarLogs;
+
+function adaptarLogsPorTamanhoTela() {
+  const menuLogs = document.getElementById('menu-logs');
+  const body = document.getElementById('body-jogo');
+  if (window.innerWidth <= 700) {
+    menuLogs.style.left = '0';
+    menuLogs.style.right = '0';
+    menuLogs.style.top = 'auto';
+    menuLogs.style.bottom = '0';
+    menuLogs.style.width = '100vw';
+    menuLogs.style.height = '180px';
+    menuLogs.style.maxWidth = '100vw';
+    menuLogs.style.borderRadius = '12px 12px 0 0';
+    menuLogs.style.padding = '10px 6px 10px 6px';
+    body.style.paddingLeft = '0';
+  } else {
+    menuLogs.style.left = '24px';
+    menuLogs.style.right = '';
+    menuLogs.style.top = '80px';
+    menuLogs.style.bottom = '';
+    menuLogs.style.width = '340px';
+    menuLogs.style.height = '340px';
+    menuLogs.style.maxWidth = '95vw';
+    menuLogs.style.borderRadius = '12px';
+    menuLogs.style.padding = '18px 16px 18px 16px';
+    body.style.paddingLeft = '370px';
+  }
+}
+
+window.addEventListener('resize', adaptarLogsPorTamanhoTela);
+window.addEventListener('DOMContentLoaded', adaptarLogsPorTamanhoTela);
+
+// Atualizar saudação do usuário
+document.getElementById('userGreeting').innerHTML = `Olá, <strong>${currentUser}</strong>`;
+
+// Salvar saldo também quando a página for fechada
+window.addEventListener('beforeunload', saveUserData);
+
+// Exibir painel admin só para Tiago
+if (currentUser && currentUser.toLowerCase() === 'tiago') {
+  document.getElementById('admin-panel').style.display = 'block';
+}
+
+function adicionarSaldoAdmin() {
+  const user = document.getElementById('adminUser').value.trim();
+  const valor = parseInt(document.getElementById('adminValor').value);
+  const msg = document.getElementById('adminMsg');
+  if (!user || isNaN(valor) || valor <= 0) {
+    msg.style.color = 'red';
+    msg.innerText = 'Preencha um usuário e um valor válido.';
+    return;
+  }
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const idx = users.findIndex(u => u.username === user);
+  if (idx === -1) {
+    msg.style.color = 'red';
+    msg.innerText = 'Usuário não encontrado!';
+    return;
+  }
+  users[idx].saldo = (users[idx].saldo || 0) + valor;
+  localStorage.setItem('users', JSON.stringify(users));
+  msg.style.color = 'green';
+  msg.innerText = `Saldo de ${user} atualizado para R$ ${users[idx].saldo}`;
+  // Se estiver adicionando saldo ao usuário logado, atualizar na tela
+  if (user === currentUser) {
+    saldo = users[idx].saldo;
+    saldoSpan.innerText = saldo;
+  }
 }
 </script>
 </body>

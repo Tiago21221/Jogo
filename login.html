@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - BOZÓ</title>
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #222b3a;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .login-container {
+      background: #071222;
+      border: 2px solid #bfa046;
+      border-radius: 15px;
+      padding: 40px;
+      width: 350px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo img {
+      height: 80px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      color: #fff8dc;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #bfa046;
+      border-radius: 8px;
+      background: #205c20;
+      color: #fff8dc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #ffe066;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: #bfa046;
+      color: #071222;
+    }
+    .btn-primary:hover {
+      background: #ffe066;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #fff8dc;
+      border: 2px solid #bfa046;
+    }
+    .btn-secondary:hover {
+      background: #bfa046;
+      color: #071222;
+    }
+    .message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .message.error {
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+    }
+    .message.success {
+      background: rgba(0, 255, 0, 0.2);
+      color: #6bff6b;
+      border: 1px solid #6bff6b;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <img src="assets/img/logo.png" alt="Logo">
+    </div>
+    
+    <div id="message"></div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Usuário:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Entrar</button>
+      <button type="button" class="btn btn-secondary" onclick="showRegister()">Criar Conta</button>
+    </form>
+    
+    <form id="registerForm" style="display: none;">
+      <div class="form-group">
+        <label for="newUsername">Usuário:</label>
+        <input type="text" id="newUsername" name="newUsername" required>
+      </div>
+      <div class="form-group">
+        <label for="newPassword">Senha:</label>
+        <input type="password" id="newPassword" name="newPassword" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar Senha:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Criar Conta</button>
+      <button type="button" class="btn btn-secondary" onclick="showLogin()">Voltar ao Login</button>
+    </form>
+  </div>
+
+  <script>
+    // Verificar se já está logado
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      window.location.href = 'index.html';
+    }
+
+    function showMessage(text, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = text;
+      messageDiv.className = `message ${type}`;
+    }
+
+    function showRegister() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'block';
+      document.getElementById('message').innerHTML = '';
+    }
+
+    function showLogin() {
+      document.getElementById('registerForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('message').innerHTML = '';
+    }
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.username === username && u.password === password);
+      
+      if (user) {
+        localStorage.setItem('currentUser', username);
+        showMessage('Login realizado com sucesso!', 'success');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      } else {
+        showMessage('Usuário ou senha incorretos!', 'error');
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('newUsername').value;
+      const password = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (password !== confirmPassword) {
+        showMessage('As senhas não coincidem!', 'error');
+        return;
+      }
+      if (username.length < 3) {
+        showMessage('O usuário deve ter pelo menos 3 caracteres!', 'error');
+        return;
+      }
+      if (password.length < 4) {
+        showMessage('A senha deve ter pelo menos 4 caracteres!', 'error');
+        return;
+      }
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find(u => u.username === username)) {
+        showMessage('Este usuário já existe!', 'error');
+        return;
+      }
+      // Criar novo usuário
+      const newUser = {
+        username: username,
+        password: password,
+        saldo: 1000,
+        createdAt: new Date().toISOString()
+      };
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+      showMessage('Conta criada com sucesso!', 'success');
+      setTimeout(() => {
+        showLogin();
+      }, 1500);
+    });
+  </script>
+</body>
+</html> 
