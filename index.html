@@ -7,60 +7,22 @@
   <link rel="stylesheet" type="text/css" href="assets/css/styles.css" /> 
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 
-</head>
+
 <body id="body-jogo" style="padding-left:370px; padding-top:80px; background:#222b3a;">
 
 <div id="top-bar" style="position:fixed; top:0; left:0; width:100vw; height:80px; background:#040f23; z-index:2000; display:flex; align-items:center; box-shadow:0 2px 8px #0003;">
   <img src="assets/img/logo.png" alt="Logo" style="height:80px; margin-left:20px; margin-right:24px;" />
   <nav style="display:flex; gap:12px;">
     <a href="#" style="background:#fff8dc; color:#071222; font-weight:bold; border-radius:6px; padding:6px 14px; text-decoration:none; box-shadow:0 1px 4px #0002; font-size:0.98em;">BOZÓ</a>
-    <a href="#" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">MINES</a>
+    <a href="mines.html" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">MINES</a>
     <a href="#" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">OUTROS</a>
   </nav>
   <div style="margin-left:auto; margin-right:24px; display:flex; align-items:center; height:100%; gap:12px;">
     <span id="userGreeting" style="color:#fff8dc; font-size:1.15em;"></span>
     <span style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:16px; padding:6px 16px; font-size:1em; box-shadow:0 1px 4px #0002; display:inline-block;">Saldo: R$ <span id="saldo">1000</span></span>
-    <div style="position:relative; display:flex; gap:8px; align-items:center;">
-      <button id="adminPanelBtn" onclick="togglePainelAdmin()" style="display:none; background:#16243aee; color:#ffe066; border:2px solid #bfa046; border-radius:12px; padding:0 18px; font-size:1em; font-weight:bold; cursor:pointer; min-width:180px; width:180px; height:40px; box-sizing:border-box; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; transition:background 0.2s;"><span style="font-size:1.2em;">🛠️</span> <span style="flex:1; text-align:center;">Painel Admin</span></button>
-      <button id="searchUserBtn" onclick="toggleBuscaUsuario()" style="display:none; background:#16243aee; color:#ffe066; border:2px solid #bfa046; border-radius:12px; padding:0 18px; font-size:1em; font-weight:bold; cursor:pointer; min-width:220px; width:220px; height:40px; box-sizing:border-box; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; transition:background 0.2s;"><span style="font-size:1.2em;">🔍</span> <span style="flex:1; text-align:center;">Buscar dados dos usuários</span></button>
-      <!-- PAINEL ADMIN -->
-      <div id="admin-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#16243aee; color:#ffe066; border:2px solid #bfa046; border-radius:12px; box-shadow:0 4px 24px #0008; padding:32px 32px 24px 32px; z-index:3000; min-width:400px; max-width:98vw;">
-        <h3 style="margin-top:0; text-align:center; color:#ffe066;">Painel Admin</h3>
-        <div style="margin-bottom:10px;">
-          <label for="adminUser">Usuário:</label>
-          <input type="text" id="adminUser" placeholder="Digite o nick..." style="width:100%; padding:6px; border-radius:6px; border:1px solid #bfa046; background:#22304a; color:#ffe066; font-size:1em; margin-bottom:10px; text-align:center;">
-        </div>
-        <div style="margin-bottom:10px;">
-          <label for="adminValor">Valor a adicionar/remover:</label>
-          <input type="number" id="adminValor" placeholder="Ex: 100 ou -100" style="width:100%; padding:6px; border-radius:6px; border:1px solid #bfa046; background:#22304a; color:#ffe066; font-size:1em; margin-bottom:10px; text-align:center;">
-        </div>
-        <button onclick="adicionarSaldoAdmin()" style="background:#6fdc6f; color:#111; border:none; border-radius:12px; font-weight:bold; padding:12px 0; width:100%; margin-bottom:12px; font-size:1.1em; cursor:pointer;">Atualizar Saldo</button>
-        <button onclick="togglePainelAdmin()" style="background:#ff4444; color:#fff; border:none; border-radius:8px; padding:12px 0; font-size:1.1em; font-weight:bold; cursor:pointer; width:100%;">Fechar</button>
-        <div id="adminMsg" style="margin-top:10px; font-size:0.95em;"></div>
-      </div>
-      <!-- PAINEL DE BUSCA DE USUÁRIOS -->
-      <div id="buscaUsuarioBox" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#16243aee; color:#ffe066; border:2px solid #bfa046; border-radius:12px; box-shadow:0 4px 24px #0008; padding:32px 32px 24px 32px; z-index:4000; min-width:400px; max-width:98vw;">
-        <div style="font-weight:bold; font-size:1.1em; margin-bottom:8px; color:#ffe066; text-align:center;">Buscar usuários</div>
-        <input type="text" id="buscaUsuarioInput" placeholder="Digite o nick ou parte do nome..." style="padding:6px; border-radius:6px; border:1px solid #bfa046; background:#22304a; color:#ffe066; font-size:1em; width:100%; margin-bottom:10px; text-align:center;">
-        <table style="width:100%; border-collapse:collapse; font-size:0.98em; color:#ffe066;">
-          <thead>
-            <tr><th style="text-align:center; padding:4px 6px; border-bottom:1px solid #bfa046;">Usuário</th><th style="text-align:center; padding:4px 6px; border-bottom:1px solid #bfa046;">Saldo</th></tr>
-          </thead>
-          <tbody id="buscaUsuarioLista"></tbody>
-        </table>
-        <button type="button" onclick="toggleBuscaUsuario()" style="background:#ff4444; color:#fff; border:none; border-radius:8px; padding:12px 0; font-size:1.1em; font-weight:bold; cursor:pointer; width:100%; margin-top:12px;">Fechar</button>
-      </div>
-    </div>
-    <button id="logoutBtn" onclick="abrirLogoutModal()" style="background:#ff4444; color:#fff; border:none; border-radius:12px; padding:10px 28px; font-size:1.1em; font-weight:bold; cursor:pointer; margin-left:12px; box-shadow:0 2px 8px #0003;">Sair</button>
-  </div>
-</div>
-
-<!-- MODAL DE CONFIRMAÇÃO DE LOGOUT -->
-<div id="logoutModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
-  <div style="background:#16243aee; color:#ffe066; border-radius:16px; padding:36px 32px 28px 32px; box-shadow:0 8px 32px #0007; min-width:320px; text-align:center; border:2px solid #bfa046;">
-    <div style="font-size:1.2em; font-weight:bold; margin-bottom:18px;">Tem certeza que você deseja sair da sua conta?</div>
-    <button onclick="logout()" style="background:#ff4444; color:#fff; border:none; border-radius:8px; padding:10px 32px; font-size:1.1em; font-weight:bold; margin-right:18px; cursor:pointer;">Sim</button>
-    <button onclick="fecharLogoutModal()" style="background:#6fdc6f; color:#111; border:none; border-radius:8px; padding:10px 32px; font-size:1.1em; font-weight:bold; cursor:pointer;">Não</button>
+    <button id="btnAdminPanel" style="display:none; background:#222b3a; color:#ffe066; border:2px solid #ffe066; border-radius:8px; padding:6px 16px; font-weight:bold; margin-left:10px; font-size:1em; align-items:center; gap:6px; cursor:pointer;"><span style='font-size:1.1em;'>🛠️</span> Painel Admin</button>
+    <button id="btnUserList" style="display:none; background:#222b3a; color:#ffe066; border:2px solid #ffe066; border-radius:8px; padding:6px 16px; font-weight:bold; margin-left:4px; font-size:1em; align-items:center; gap:6px; cursor:pointer;"><span style='font-size:1.1em;'>🔍</span> Buscar dados dos usuários</button>
+    <button onclick="confirmarLogout()" style="background:#ff4444; color:#fff; border:none; border-radius:10px; padding:10px 28px; font-size:1.1em; font-weight:bold; cursor:pointer; letter-spacing:1px; margin-left:16px;">Sair</button>
   </div>
 </div>
 
@@ -105,7 +67,47 @@
 
 <h3 id="mensagem"></h3>
 
-<div id="version-label" style="position:fixed; left:4px; bottom:4px; background:#071222cc; color:#ffe066; font-weight:bold; font-size:1.05em; border-radius:8px; padding:6px 16px; z-index:4000; box-shadow:0 2px 8px #0003; letter-spacing:1px;">V 2.0.1</div>
+<!-- Modal Painel Admin -->
+<div id="admin-panel-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000a; z-index:4000; align-items:center; justify-content:center;">
+  <div id="admin-panel" style="background:#16213a; color:#ffe066; border:2px solid #ffe066; border-radius:14px; box-shadow:0 4px 24px #0008; padding:28px 24px 18px 24px; min-width:340px; max-width:90vw; max-height:80vh; overflow-y:auto; position:relative;">
+    <h2 style="margin-top:0; text-align:center;">Painel Admin</h2>
+    <div style="margin-bottom:10px;">
+      <label for="adminUser">Usuário:</label>
+      <input type="text" id="adminUser" style="width:100%; padding:6px; border-radius:6px; border:1px solid #ffe066; margin-top:2px;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label for="adminValor">Valor a adicionar/remover:</label>
+      <input type="number" id="adminValor" placeholder="Ex: 100 ou -100" style="width:100%; padding:6px; border-radius:6px; border:1px solid #ffe066; margin-top:2px;">
+    </div>
+    <button onclick="adicionarSaldoAdmin()" style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:8px; padding:6px 16px; border:none; cursor:pointer;">Atualizar Saldo</button>
+    <div id="adminMsg" style="margin-top:10px; font-size:0.95em;"></div>
+    <button onclick="fecharAdminPanel()" style="background:#ff4444; color:#fff; font-weight:bold; border-radius:8px; padding:8px 0; border:none; width:100%; margin-top:18px; font-size:1.1em;">Fechar</button>
+  </div>
+</div>
+
+<!-- Modal de busca/lista de usuários -->
+<div id="user-list-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000a; z-index:4000; align-items:center; justify-content:center;">
+  <div style="background:#16213a; color:#ffe066; border:2px solid #ffe066; border-radius:14px; box-shadow:0 4px 24px #0008; padding:28px 24px 18px 24px; min-width:340px; max-width:90vw; max-height:80vh; overflow-y:auto; position:relative;">
+    <h2 style="margin-top:0; text-align:center;">Lista de Usuários</h2>
+    <input id="userSearchInput" type="text" placeholder="Buscar usuário..." style="width:100%; padding:7px 10px; border-radius:7px; border:1px solid #ffe066; margin-bottom:14px; font-size:1.05em;">
+    <div id="userListContainer" style="max-height:45vh; overflow-y:auto;"></div>
+    <button onclick="fecharUserListModal()" style="background:#ff4444; color:#fff; font-weight:bold; border-radius:8px; padding:8px 0; border:none; width:100%; margin-top:18px; font-size:1.1em;">Fechar</button>
+  </div>
+</div>
+
+<!-- Modal de confirmação de logout -->
+<div id="logout-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000a; z-index:5000; align-items:center; justify-content:center;">
+  <div style="background:#fff8dc; color:#071222; border:2px solid #ff4444; border-radius:14px; box-shadow:0 4px 24px #0008; padding:32px 28px 24px 28px; min-width:320px; max-width:90vw; text-align:center;">
+    <h2 style="margin-top:0; color:#ff4444;">Sair da Conta</h2>
+    <p style="font-size:1.15em; margin-bottom:28px;">Tem certeza que deseja sair da conta?</p>
+    <div style="display:flex; gap:18px; justify-content:center;">
+      <button onclick="fecharLogoutModal()" style="background:#6fdc6f; color:#111; border:none; border-radius:8px; padding:8px 28px; font-size:1.05em; font-weight:bold; cursor:pointer;">Cancelar</button>
+      <button onclick="logout()" style="background:#ff4444; color:#fff; border:none; border-radius:8px; padding:8px 28px; font-size:1.05em; font-weight:bold; cursor:pointer;">Sair</button>
+    </div>
+  </div>
+</div>
+
+<div id="version-label" style="position:fixed; left:3px; bottom:3px; background:#071222cc; color:#ffe066; font-weight:bold; font-size:1.05em; border-radius:8px; padding:4px 10px; z-index:4000; box-shadow:0 2px 8px #0003; letter-spacing:1px;">V 2.1.1</div>
 
 <style>
   #menu-logs {
@@ -199,7 +201,15 @@ function saveUserData() {
   }
 }
 
-// Logout
+// Logout com modal customizado
+function confirmarLogout() {
+  document.getElementById('logout-modal').style.display = 'flex';
+}
+
+function fecharLogoutModal() {
+  document.getElementById('logout-modal').style.display = 'none';
+}
+
 function logout() {
   localStorage.removeItem('currentUser');
   window.location.href = 'login.html';
@@ -216,7 +226,7 @@ for (let i = 1; i <= 6; i++) {
       <div class="total-aposta" id="aposta-white-${i}">R$0</div>
   </div>`;
   redRow.innerHTML += `<div class="cell" data-num="${i}" data-cor="red">
-      <div class="number" style="color:red;">🔴 ${i}</div>
+      <div class="number" style="color:red;"> ${i}</div>
       <div class="total-aposta" id="aposta-red-${i}">R$0</div>
   </div>`;
 }
@@ -418,37 +428,58 @@ document.getElementById('userGreeting').innerHTML = `Olá, <strong>${currentUser
 // Salvar saldo também quando a página for fechada
 window.addEventListener('beforeunload', saveUserData);
 
-// Mostrar botões e painéis só para Tiago
+// Exibir botões especiais só para Tiago
 if (currentUser && currentUser.toLowerCase() === 'tiago') {
-  document.getElementById('adminPanelBtn').style.display = 'flex';
-  document.getElementById('searchUserBtn').style.display = 'flex';
+  document.getElementById('btnAdminPanel').style.display = 'inline-flex';
+  document.getElementById('btnUserList').style.display = 'inline-flex';
 }
 
-function togglePainelAdmin() {
-  const painel = document.getElementById('admin-panel');
-  painel.style.display = (painel.style.display === 'block') ? 'none' : 'block';
-  // Se abrir o painel admin, fecha o painel de busca
-  if (painel.style.display === 'block') document.getElementById('buscaUsuarioBox').style.display = 'none';
+// Botão para abrir Painel Admin como modal
+const btnAdminPanel = document.getElementById('btnAdminPanel');
+if (btnAdminPanel) {
+  btnAdminPanel.onclick = function() {
+    document.getElementById('admin-panel-modal').style.display = 'flex';
+  };
 }
-function toggleBuscaUsuario() {
-  const box = document.getElementById('buscaUsuarioBox');
-  box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-  // Se abrir o painel de busca, fecha o painel admin
-  if (box.style.display === 'block') {
-    document.getElementById('admin-panel').style.display = 'none';
-    document.getElementById('buscaUsuarioInput').value = '';
-    atualizarBuscaUsuarioLista();
-    document.getElementById('buscaUsuarioInput').focus();
-  }
+// Botão para fechar Painel Admin modal
+function fecharAdminPanel() {
+  document.getElementById('admin-panel-modal').style.display = 'none';
 }
-document.getElementById('buscaUsuarioInput').addEventListener('input', atualizarBuscaUsuarioLista);
-function atualizarBuscaUsuarioLista() {
-  const termo = document.getElementById('buscaUsuarioInput').value.trim().toLowerCase();
+
+// Botão para abrir modal de lista de usuários
+const btnUserList = document.getElementById('btnUserList');
+if (btnUserList) {
+  btnUserList.onclick = function() {
+    abrirUserListModal();
+  };
+}
+
+function abrirUserListModal() {
+  const modal = document.getElementById('user-list-modal');
+  modal.style.display = 'flex';
+  atualizarUserList();
+  document.getElementById('userSearchInput').value = '';
+}
+function fecharUserListModal() {
+  document.getElementById('user-list-modal').style.display = 'none';
+}
+
+function atualizarUserList() {
   const users = JSON.parse(localStorage.getItem('users') || '[]');
-  const filtrados = termo ? users.filter(u => u.username.toLowerCase().includes(termo)) : users;
-  const tbody = document.getElementById('buscaUsuarioLista');
-  tbody.innerHTML = filtrados.length ? filtrados.map(u => `<tr><td style='padding:4px 6px; text-align:center;'>${u.username}</td><td style='padding:4px 6px; text-align:center;'>R$ ${u.saldo}</td></tr>`).join('') : `<tr><td colspan='2' style='text-align:center; color:#ff4444;'>Nenhum usuário encontrado.</td></tr>`;
+  const container = document.getElementById('userListContainer');
+  const search = document.getElementById('userSearchInput').value.trim().toLowerCase();
+  let filtrados = users;
+  if (search) {
+    filtrados = users.filter(u => u.username.toLowerCase().includes(search));
+  }
+  if (filtrados.length === 0) {
+    container.innerHTML = '<em>Nenhum usuário encontrado.</em>';
+    return;
+  }
+  container.innerHTML = filtrados.map(u => `<div style='padding:7px 0; border-bottom:1px solid #ffe06633; display:flex; justify-content:space-between; align-items:center;'><span style='font-weight:bold;'>${u.username}</span><span style='color:#6fdc6f; font-weight:bold;'>R$ ${u.saldo}</span></div>`).join('');
 }
+document.getElementById('userSearchInput').addEventListener('input', atualizarUserList);
+
 function adicionarSaldoAdmin() {
   const user = document.getElementById('adminUser').value.trim();
   const valor = parseInt(document.getElementById('adminValor').value);
@@ -465,10 +496,13 @@ function adicionarSaldoAdmin() {
     msg.innerText = 'Usuário não encontrado!';
     return;
   }
-  users[idx].saldo = (users[idx].saldo || 0) + valor;
+  let novoSaldo = (users[idx].saldo || 0) + valor;
+  if (novoSaldo < 0) novoSaldo = 0;
+  users[idx].saldo = novoSaldo;
   localStorage.setItem('users', JSON.stringify(users));
   msg.style.color = 'green';
   msg.innerText = `Saldo de ${user} atualizado para R$ ${users[idx].saldo}`;
+  // Se estiver alterando saldo do usuário logado, atualizar na tela
   if (user === currentUser) {
     saldo = users[idx].saldo;
     saldoSpan.innerText = saldo;
@@ -476,4 +510,4 @@ function adicionarSaldoAdmin() {
 }
 </script>
 </body>
-</html>
+</html> 

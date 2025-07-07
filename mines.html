@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo de Dados - Mines</title>
+  <link rel="stylesheet" type="text/css" href="assets/css/styles.css" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+</head>
+<body id="body-jogo" style="padding-left:0; padding-top:80px; background:#222b3a; overflow-x:hidden; min-height:100vh; display:flex; flex-direction:column;">
+<!-- Top bar igual index.html -->
+<div id="top-bar" style="position:fixed; top:0; left:0; width:100vw; height:80px; background:#040f23; z-index:2000; display:flex; align-items:center; box-shadow:0 2px 8px #0003;">
+  <img src="assets/img/logo.png" alt="Logo" style="height:80px; margin-left:20px; margin-right:24px;" />
+  <nav style="display:flex; gap:12px;">
+    <a href="index.html" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">BOZÓ</a>
+    <a href="mines.html" style="background:#fff8dc; color:#071222; font-weight:bold; border-radius:6px; padding:6px 14px; text-decoration:none; box-shadow:0 1px 4px #0002; font-size:0.98em;">MINES</a>
+    <a href="#" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">OUTROS</a>
+  </nav>
+  <div style="margin-left:auto; margin-right:24px; display:flex; align-items:center; height:100%; gap:12px;">
+    <span id="userGreeting" style="color:#fff8dc; font-size:1.15em;"></span>
+    <span style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:16px; padding:6px 16px; font-size:1em; box-shadow:0 1px 4px #0002; display:inline-block;">Saldo: R$ <span id="saldo">1000</span></span>
+    <button id="btnAdminPanel" style="display:none; background:#222b3a; color:#ffe066; border:2px solid #ffe066; border-radius:8px; padding:6px 16px; font-weight:bold; margin-left:10px; font-size:1em; align-items:center; gap:6px; cursor:pointer;"><span style='font-size:1.1em;'>🛠️</span> Painel Admin</button>
+    <button id="btnUserList" style="display:none; background:#222b3a; color:#ffe066; border:2px solid #ffe066; border-radius:8px; padding:6px 16px; font-weight:bold; margin-left:4px; font-size:1em; align-items:center; gap:6px; cursor:pointer;"><span style='font-size:1.1em;'>🔍</span> Buscar dados dos usuários</button>
+    <button onclick="confirmarLogout()" style="background:#ff4444; color:#fff; border:none; border-radius:10px; padding:10px 28px; font-size:1.1em; font-weight:bold; cursor:pointer; letter-spacing:1px; margin-left:16px;">Sair</button>
+  </div>
+</div>
+
+<div style="flex:1; display:flex; flex-direction:row; align-items:flex-start; justify-content:center; width:100vw; min-height:0; gap:24px; margin-top:32px;">
+  <!-- Painel de aposta à esquerda -->
+  <div style="background:#181f2b; border-radius:18px; box-shadow:0 4px 32px #0007; padding:28px 24px 54px 24px; min-width:220px; max-width:280px; display:flex; flex-direction:column; align-items:center; gap:18px; border:2px solid #222e44; margin-top:0; position:relative;">
+    <div style="width:100%; display:flex; flex-direction:column; gap:18px;">
+      <label style="color:#8fd6ff; font-weight:bold; font-size:1.3em;">Minas</label>
+      <input id="mines-count" type="number" min="1" max="24" value="3" style="width:100%; text-align:center; font-size:1.5em; border-radius:8px; border:2px solid #3ec6ff; padding:10px 0; background:#101624; color:#8fd6ff;">
+      <label style="color:#8fd6ff; font-weight:bold; font-size:1.3em;">Aposta</label>
+      <input id="mines-bet" type="number" min="1" value="1" style="width:100%; text-align:center; font-size:1.5em; border-radius:8px; border:2px solid #3ec6ff; padding:10px 0; background:#101624; color:#8fd6ff;">
+    </div>
+    <button id="btn-start-mines" style="background:#6fdc6f; color:#111; border:none; border-radius:10px; padding:16px 0; font-size:1.4em; font-weight:bold; cursor:pointer; width:100%; margin-top:10px; letter-spacing:1px;">Começar o Jogo</button>
+    <button id="btn-cashout" style="background:#3ec6ff; color:#181f2b; border:none; border-radius:10px; padding:16px 0; font-size:1.4em; font-weight:bold; cursor:pointer; width:100%; margin-top:0; letter-spacing:1px; display:none;">Cashout</button>
+    <div id="mines-msg" style="color:#ff4444; font-weight:bold; min-height:28px; margin-bottom:0; font-size:1.1em; text-align:center;"></div>
+    <div id="mines-bar-info" style="position:static; background:#101624; border-radius:0 0 16px 16px; border-top:1.5px solid #222e44; padding:14px 0 10px 0; color:#3ec6ff; font-size:1.25em; font-weight:bold; text-align:center; box-shadow:0 0 16px #3ec6ff22 inset; letter-spacing:1px; margin-top:10px; width:100%;">
+      <span id="mines-bar-ganho">Ganho: R$ 0,00</span><br><span id="mines-bar-mult">Multiplicador: x1.00</span>
+    </div>
+  </div>
+  <!-- Grid à direita -->
+  <div style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top:0;">
+    <div id="mines-board" style="display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); grid-gap:0.7vw; width:60vw; max-width:656px; min-width:180px; aspect-ratio:1/1; margin-left:auto; margin-right:auto;"></div>
+    <div id="mines-result" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:#2ecc40; color:#fff; font-size:2.2em; font-weight:bold; border-radius:12px; padding:24px 38px; box-shadow:0 4px 32px #0008; text-align:center; z-index:10;"></div>
+  </div>
+</div>
+
+<!-- Modal Painel Admin -->
+<div id="admin-panel-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000a; z-index:4000; align-items:center; justify-content:center;">
+  <div id="admin-panel" style="background:#16213a; color:#ffe066; border:2px solid #ffe066; border-radius:14px; box-shadow:0 4px 24px #0008; padding:28px 24px 18px 24px; min-width:340px; max-width:90vw; max-height:80vh; overflow-y:auto; position:relative;">
+    <h2 style="margin-top:0; text-align:center;">Painel Admin</h2>
+    <div style="margin-bottom:10px;">
+      <label for="adminUser">Usuário:</label>
+      <input type="text" id="adminUser" style="width:100%; padding:6px; border-radius:6px; border:1px solid #ffe066; margin-top:2px;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label for="adminValor">Valor a adicionar/remover:</label>
+      <input type="number" id="adminValor" placeholder="Ex: 100 ou -100" style="width:100%; padding:6px; border-radius:6px; border:1px solid #ffe066; margin-top:2px;">
+    </div>
+    <button onclick="adicionarSaldoAdmin()" style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:8px; padding:6px 16px; border:none; cursor:pointer;">Atualizar Saldo</button>
+    <div id="adminMsg" style="margin-top:10px; font-size:0.95em;"></div>
+    <button onclick="fecharAdminPanel()" style="background:#ff4444; color:#fff; font-weight:bold; border-radius:8px; padding:8px 0; border:none; width:100%; margin-top:18px; font-size:1.1em;">Fechar</button>
+  </div>
+</div>
+
+<!-- Modal de busca/lista de usuários -->
+<div id="user-list-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000a; z-index:4000; align-items:center; justify-content:center;">
+  <div style="background:#16213a; color:#ffe066; border:2px solid #ffe066; border-radius:14px; box-shadow:0 4px 24px #0008; padding:28px 24px 18px 24px; min-width:340px; max-width:90vw; max-height:80vh; overflow-y:auto; position:relative;">
+    <h2 style="margin-top:0; text-align:center;">Lista de Usuários</h2>
+    <input id="userSearchInput" type="text" placeholder="Buscar usuário..." style="width:100%; padding:7px 10px; border-radius:7px; border:1px solid #ffe066; margin-bottom:14px; font-size:1.05em;">
+    <div id="userListContainer" style="max-height:45vh; overflow-y:auto;"></div>
+    <button onclick="fecharUserListModal()" style="background:#ff4444; color:#fff; font-weight:bold; border-radius:8px; padding:8px 0; border:none; width:100%; margin-top:18px; font-size:1.1em;">Fechar</button>
+  </div>
+</div>
+
+<!-- Modal de confirmação de logout -->
+<div id="logout-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000a; z-index:5000; align-items:center; justify-content:center;">
+  <div style="background:#fff8dc; color:#071222; border:2px solid #ff4444; border-radius:14px; box-shadow:0 4px 24px #0008; padding:32px 28px 24px 28px; min-width:320px; max-width:90vw; text-align:center;">
+    <h2 style="margin-top:0; color:#ff4444;">Sair da Conta</h2>
+    <p style="font-size:1.15em; margin-bottom:28px;">Tem certeza que deseja sair da conta?</p>
+    <div style="display:flex; gap:18px; justify-content:center;">
+      <button onclick="fecharLogoutModal()" style="background:#6fdc6f; color:#111; border:none; border-radius:8px; padding:8px 28px; font-size:1.05em; font-weight:bold; cursor:pointer;">Cancelar</button>
+      <button onclick="logout()" style="background:#ff4444; color:#fff; border:none; border-radius:8px; padding:8px 28px; font-size:1.05em; font-weight:bold; cursor:pointer;">Sair</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/mines.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Garantir que o nome do usuário apareça corretamente
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) {
+    window.location.href = 'login.html';
+    return;
+  }
+  document.getElementById('userGreeting').innerHTML = `Olá, <strong>${currentUser}</strong>`;
+
+  // Exibir botões especiais só para Tiago
+  if (currentUser && currentUser.toLowerCase() === 'tiago') {
+    document.getElementById('btnAdminPanel').style.display = 'inline-flex';
+    document.getElementById('btnUserList').style.display = 'inline-flex';
+  }
+
+  // Botão para abrir Painel Admin como modal
+  const btnAdminPanel = document.getElementById('btnAdminPanel');
+  if (btnAdminPanel) {
+    btnAdminPanel.onclick = function() {
+      document.getElementById('admin-panel-modal').style.display = 'flex';
+    };
+  }
+  function fecharAdminPanel() {
+    document.getElementById('admin-panel-modal').style.display = 'none';
+  }
+  window.fecharAdminPanel = fecharAdminPanel;
+
+  // Botão para abrir modal de lista de usuários
+  const btnUserList = document.getElementById('btnUserList');
+  if (btnUserList) {
+    btnUserList.onclick = function() {
+      abrirUserListModal();
+    };
+  }
+  function abrirUserListModal() {
+    const modal = document.getElementById('user-list-modal');
+    modal.style.display = 'flex';
+    atualizarUserList();
+    document.getElementById('userSearchInput').value = '';
+  }
+  window.abrirUserListModal = abrirUserListModal;
+  function fecharUserListModal() {
+    document.getElementById('user-list-modal').style.display = 'none';
+  }
+  window.fecharUserListModal = fecharUserListModal;
+  function atualizarUserList() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const container = document.getElementById('userListContainer');
+    const search = document.getElementById('userSearchInput').value.trim().toLowerCase();
+    let filtrados = users;
+    if (search) {
+      filtrados = users.filter(u => u.username.toLowerCase().includes(search));
+    }
+    if (filtrados.length === 0) {
+      container.innerHTML = '<em>Nenhum usuário encontrado.</em>';
+      return;
+    }
+    container.innerHTML = filtrados.map(u => `<div style='padding:7px 0; border-bottom:1px solid #ffe06633; display:flex; justify-content:space-between; align-items:center;'><span style='font-weight:bold;'>${u.username}</span><span style='color:#6fdc6f; font-weight:bold;'>R$ ${u.saldo}</span></div>`).join('');
+  }
+  document.getElementById('userSearchInput').addEventListener('input', atualizarUserList);
+
+  // Logout customizado
+  function confirmarLogout() {
+    document.getElementById('logout-modal').style.display = 'flex';
+  }
+  window.confirmarLogout = confirmarLogout;
+  function fecharLogoutModal() {
+    document.getElementById('logout-modal').style.display = 'none';
+  }
+  window.fecharLogoutModal = fecharLogoutModal;
+  function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'login.html';
+  }
+  window.logout = logout;
+
+  // Admin: adicionar/remover saldo
+  function adicionarSaldoAdmin() {
+    const user = document.getElementById('adminUser').value.trim();
+    const valor = parseInt(document.getElementById('adminValor').value);
+    const msg = document.getElementById('adminMsg');
+    if (!user || isNaN(valor) || valor === 0) {
+      msg.style.color = 'red';
+      msg.innerText = 'Preencha um usuário e um valor diferente de zero.';
+      return;
+    }
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const idx = users.findIndex(u => u.username === user);
+    if (idx === -1) {
+      msg.style.color = 'red';
+      msg.innerText = 'Usuário não encontrado!';
+      return;
+    }
+    let novoSaldo = (users[idx].saldo || 0) + valor;
+    if (novoSaldo < 0) novoSaldo = 0;
+    users[idx].saldo = novoSaldo;
+    localStorage.setItem('users', JSON.stringify(users));
+    msg.style.color = 'green';
+    msg.innerText = `Saldo de ${user} atualizado para R$ ${users[idx].saldo}`;
+    if (user === currentUser) {
+      saldo = users[idx].saldo;
+      saldoSpan.innerText = saldo;
+    }
+  }
+  window.adicionarSaldoAdmin = adicionarSaldoAdmin;
+});
+</script>
+</body>
+</html> 
