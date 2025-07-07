@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Outros Jogos - Em Breve</title>
+  <link rel="stylesheet" type="text/css" href="assets/css/styles.css" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <style>
+    body {
+      background: #222b3a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .outros-container {
+      max-width: 900px;
+      margin: 40px auto 0 auto;
+      padding: 24px;
+      background: #1a2636;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px #0007;
+    }
+    .outros-title {
+      font-size: 2em;
+      color: #ffe066;
+      text-align: center;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+    }
+    .search-bar {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 2px solid #ffe066;
+      font-size: 1.1em;
+      margin-bottom: 28px;
+      background: #222b3a;
+      color: #ffe066;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 28px;
+    }
+    .game-card {
+      background: #25314a;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px #0005;
+      padding: 24px 16px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 220px;
+      position: relative;
+      transition: transform 0.15s;
+    }
+    .game-card:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 32px #0007;
+    }
+    .game-img {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 12px #0005;
+      display: block;
+    }
+    .game-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffe066;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .game-soon {
+      background: #ffe066;
+      color: #1a2636;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 6px 18px;
+      font-size: 1em;
+      margin-top: 12px;
+      box-shadow: 0 2px 8px #0003;
+    }
+    @media (max-width: 600px) {
+      .outros-container {
+        padding: 8px;
+      }
+      .games-grid {
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="top-bar" style="position:fixed; top:0; left:0; width:100vw; height:80px; background:#040f23; z-index:2000; display:flex; align-items:center; box-shadow:0 2px 8px #0003;">
+    <img src="assets/img/logo.png" alt="Logo" style="height:80px; margin-left:20px; margin-right:24px;" />
+    <nav style="display:flex; gap:12px;">
+      <a href="index.html" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">BOZÓ</a>
+      <a href="mines.html" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">MINES</a>
+      <a href="outros.html" style="background:#fff8dc; color:#071222; font-weight:bold; border-radius:6px; padding:6px 14px; text-decoration:none; box-shadow:0 1px 4px #0002; font-size:0.98em;">OUTROS</a>
+    </nav>
+    <div style="margin-left:auto; margin-right:24px; display:flex; align-items:center; height:100%; gap:12px;">
+      <span id="userGreeting" style="color:#fff8dc; font-size:1.15em;"></span>
+      <span style="background:#6fdc6f; color:#111; font-weight:bold; border-radius:16px; padding:6px 16px; font-size:1em; box-shadow:0 1px 4px #0002; display:inline-block;">Saldo: R$ <span id="saldo">1000</span></span>
+      <button id="btnAdminPanel" style="display:none; background:#222b3a; color:#ffe066; border:2px solid #ffe066; border-radius:8px; padding:6px 16px; font-weight:bold; margin-left:10px; font-size:1em; align-items:center; gap:6px; cursor:pointer;"><span style='font-size:1.1em;'>🛠️</span> Painel Admin</button>
+      <button id="btnUserList" style="display:none; background:#222b3a; color:#ffe066; border:2px solid #ffe066; border-radius:8px; padding:6px 16px; font-weight:bold; margin-left:4px; font-size:1em; align-items:center; gap:6px; cursor:pointer;"><span style='font-size:1.1em;'>🔍</span> Buscar dados dos usuários</button>
+      <button onclick="confirmarLogout()" style="background:#ff4444; color:#fff; border:none; border-radius:10px; padding:10px 28px; font-size:1.1em; font-weight:bold; cursor:pointer; letter-spacing:1px; margin-left:16px;">Sair</button>
+    </div>
+  </div>
+  <div class="outros-container" style="margin-top:100px;">
+    <div class="outros-title">Outros Jogos</div>
+    <input type="text" id="searchInput" class="search-bar" placeholder="Pesquisar jogos..." />
+    <div class="games-grid" id="gamesGrid"></div>
+  </div>
+  <script>
+    // Saudação e saldo
+    const currentUser = localStorage.getItem('currentUser');
+    document.getElementById('userGreeting').innerHTML = currentUser ? `Olá, <strong>${currentUser}</strong>` : '';
+    // Carregar saldo
+    let saldo = 1000;
+    const saldoSpan = document.getElementById('saldo');
+    function loadUserData() {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.username === currentUser);
+      if (user) {
+        saldo = user.saldo;
+        saldoSpan.innerText = saldo;
+      }
+    }
+    loadUserData();
+    // Logout
+    function confirmarLogout() {
+      if (confirm('Deseja realmente sair da conta?')) {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+      }
+    }
+    // Jogos fictícios
+    const games = [
+      { title: 'Crash', img: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Crash_bandicoot_logo.png', soon: true },
+      { title: 'Plinko', img: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Plinko_board.jpg', soon: true },
+      { title: 'Aviator', img: 'https://cdn.pixabay.com/photo/2017/01/31/13/14/airplane-2029712_1280.png', soon: true },
+      { title: 'Towers', img: 'https://cdn-icons-png.flaticon.com/512/69/69524.png', soon: true },
+      { title: 'Dice', img: 'https://cdn-icons-png.flaticon.com/512/104/104678.png', soon: true },
+      { title: 'Limbo', img: 'https://cdn-icons-png.flaticon.com/512/3208/3208720.png', soon: true },
+      { title: 'Keno', img: 'https://cdn-icons-png.flaticon.com/512/104/104678.png', soon: true },
+      { title: 'Goal', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Mines 2.0', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Roulette', img: 'https://cdn-icons-png.flaticon.com/512/104/104678.png', soon: true },
+      { title: 'Blackjack', img: 'https://cdn-icons-png.flaticon.com/512/104/104678.png', soon: true },
+      { title: 'Baccarat', img: 'https://cdn-icons-png.flaticon.com/512/104/104678.png', soon: true },
+      { title: 'Fruit Party', img: 'https://cdn.pixabay.com/photo/2017/01/31/13/14/airplane-2029712_1280.png', soon: true },
+      { title: 'Sweet Bonanza', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Lucky Wheel', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Mega Dice', img: 'https://cdn-icons-png.flaticon.com/512/104/104678.png', soon: true },
+      { title: 'Dragon Tiger', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Crazy Time', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Monopoly', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+      { title: 'Coin Flip', img: 'https://cdn-icons-png.flaticon.com/512/616/616494.png', soon: true },
+    ];
+    const grid = document.getElementById('gamesGrid');
+    const searchInput = document.getElementById('searchInput');
+    function renderGames(filter = '') {
+      const filtered = games.filter(g => g.title.toLowerCase().includes(filter.toLowerCase()));
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ffe066;font-size:1.1em;">Nenhum jogo encontrado.</div>';
+        return;
+      }
+      grid.innerHTML = filtered.map(g => `
+        <div class="game-card">
+          <img class="game-img" src="${g.img || 'assets/img/games/default.png'}" alt="${g.title}" onerror="this.onerror=null;this.src='assets/img/games/default.png'" />
+          <div class="game-title">${g.title}</div>
+          <div class="game-soon">Em breve</div>
+        </div>
+      `).join('');
+    }
+    searchInput.addEventListener('input', e => renderGames(e.target.value));
+    renderGames();
+    // Exibir botões especiais só para Tiago
+    if (currentUser && currentUser.toLowerCase() === 'tiago') {
+      document.getElementById('btnAdminPanel').style.display = 'inline-flex';
+      document.getElementById('btnUserList').style.display = 'inline-flex';
+    }
+  </script>
+</body>
+</html> 

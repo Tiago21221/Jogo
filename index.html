@@ -15,7 +15,7 @@
   <nav style="display:flex; gap:12px;">
     <a href="#" style="background:#fff8dc; color:#071222; font-weight:bold; border-radius:6px; padding:6px 14px; text-decoration:none; box-shadow:0 1px 4px #0002; font-size:0.98em;">BOZÓ</a>
     <a href="mines.html" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">MINES</a>
-    <a href="#" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">OUTROS</a>
+    <a href="outros.html" style="color:#fff8dc; background:transparent; border-radius:6px; padding:6px 14px; text-decoration:none; font-weight:bold; transition:background 0.2s; font-size:0.98em;">OUTROS</a>
   </nav>
   <div style="margin-left:auto; margin-right:24px; display:flex; align-items:center; height:100%; gap:12px;">
     <span id="userGreeting" style="color:#fff8dc; font-size:1.15em;"></span>
@@ -62,7 +62,7 @@
     <strong style="color:#ffe066; font-size:1.2em;">Últimas Jogadas</strong>
   </div>
   <hr style="border:1px solid #bfa046; margin:10px 0;">
-  <div id="logs-list"></div>
+  <div id="logs-list" style="flex:1; overflow-y:auto;"></div>
 </div>
 
 <h3 id="mensagem"></h3>
@@ -112,21 +112,49 @@
 <style>
   #menu-logs {
     position: fixed;
-    top: 80px;
-    left: 24px;
-    background: #205c20;
-    border: 2px solid #bfa046;
-    border-radius: 12px;
+    top: 110px;
+    left: 40px;
+    background: #1a2636;
+    border: 2px solid #3a4a6a;
+    border-radius: 18px;
     padding: 18px 16px 18px 16px;
     z-index: 1000;
-    width: 340px;
+    width: 360px;
     max-width: 95vw;
-    height: 340px;
-    max-height: 65vh;
-    overflow-y: auto;
-    box-shadow: 0 6px 32px #0005;
-    color: #fff8dc;
+    height: calc(100vh - 140px);
+    max-height: calc(100vh - 140px);
+    box-shadow: 0 8px 32px #0007;
+    color: #fff;
     transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  #logs-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  #logs-list::-webkit-scrollbar {
+    width: 10px;
+    background: #1a2636;
+    border-radius: 8px;
+  }
+  #logs-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ffe066 60%, #bfa046 100%);
+    border-radius: 8px;
+    border: 2px solid #1a2636;
+  }
+  #logs-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ffe066 80%, #bfa046 100%);
+  }
+  #logs-list::-webkit-scrollbar-track {
+    background: #222b3a;
+    border-radius: 8px;
+  }
+  #logs-list {
+    scrollbar-width: thin;
+    scrollbar-color: #ffe066 #222b3a;
   }
   @media (max-width: 700px) {
     #menu-logs {
@@ -408,9 +436,9 @@ function adaptarLogsPorTamanhoTela() {
   } else {
     menuLogs.style.left = '24px';
     menuLogs.style.right = '';
-    menuLogs.style.top = '80px';
+    menuLogs.style.top = '100px';
     menuLogs.style.bottom = '';
-    menuLogs.style.width = '340px';
+    menuLogs.style.width = '272px';
     menuLogs.style.height = '340px';
     menuLogs.style.maxWidth = '95vw';
     menuLogs.style.borderRadius = '12px';
